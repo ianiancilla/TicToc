@@ -7,19 +7,25 @@ public class CharaController : MonoBehaviour
     // configuration variables
     [Header("Movement")]
     [SerializeField] float moveSpeed = 5f;
-    [SerializeField] [Tooltip("Rate at which character gets to max speed.")]
-                     [Range(0f, 1f)] float acceleration = 0.5f;
-    [SerializeField] [Tooltip("Rate at which character stops moving once input ends.")]
-    [Range(0f, 1f)] float deceleration = 0.5f;
+    [SerializeField] [Tooltip("Time it takes to reach max speed")]
+                     float accelerationTime = 2.5f;
+    [SerializeField] [Tooltip("Time it takes to stop completely.")]
+                     float decelerationTime = 2.5f;
+
+    // private variables
+    float accelerationPerSec;
+    float currentVelocity;
 
     // cached variables
-    Rigidbody rigidbody;
+    Rigidbody rigidBody;
 
     // Start is called before the first frame update
     void Start()
     {
-        // initialise cache
-        rigidbody = GetComponent<Rigidbody>();
+        // initialise stuff
+        rigidBody = GetComponent<Rigidbody>();
+
+        accelerationPerSec = moveSpeed / accelerationTime;
     }
 
     /// <summary>
@@ -28,8 +34,19 @@ public class CharaController : MonoBehaviour
     /// <param name="direction"></param>
     public void MoveHorizontally(float direction)
     {
+        if (direction > 0)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+        else if (direction < 0)
+        {
+            transform.rotation = Quaternion.Euler(0, 180, 0);
+        }
+
         float newXPos = transform.position.x + (direction * Time.deltaTime * moveSpeed);
-        rigidbody.MovePosition(new Vector3(newXPos,
+
+
+        rigidBody.MovePosition(new Vector3(newXPos,
                                             transform.position.y,
                                             transform.position.z));
     }
