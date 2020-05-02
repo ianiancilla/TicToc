@@ -14,7 +14,8 @@ public class CharaController : MonoBehaviour
 
     // private variables
     float accelerationPerSec;
-    float currentVelocity;
+    float decelerationPerSec;
+    float currentSpeed = 0;
 
     // cached variables
     Rigidbody rigidBody;
@@ -26,14 +27,17 @@ public class CharaController : MonoBehaviour
         rigidBody = GetComponent<Rigidbody>();
 
         accelerationPerSec = moveSpeed / accelerationTime;
+        decelerationPerSec = moveSpeed / decelerationTime;
     }
 
     /// <summary>
-    /// Moves character along X-axis.
+    /// Moves character along X-axis, turning to face directino of movement.
+    /// Starting/stopping speed indicated by accelerationTime/deceleration/time variables.
     /// </summary>
     /// <param name="direction"></param>
     public void MoveHorizontally(float direction)
     {
+        // face correct direction
         if (direction > 0)
         {
             transform.rotation = Quaternion.Euler(0, 0, 0);
@@ -43,11 +47,36 @@ public class CharaController : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 180, 0);
         }
 
-        float newXPos = transform.position.x + (direction * Time.deltaTime * moveSpeed);
+        // define speed based on acceleration/deceleration
+        if (direction != 0)
+        {
+            currentSpeed = Mathf.Clamp(currentSpeed + (accelerationPerSec * Time.deltaTime), 
+                                       0,
+                                       moveSpeed);
+        }
+        else
+        {
+            currentSpeed = Mathf.Clamp(currentSpeed - (decelerationPerSec * Time.deltaTime),
+                                       0, 
+                                       moveSpeed);
+        }
 
+        // move
+        float deltaMove = (Time.deltaTime * currentSpeed);
+        float newXPos;
+
+        if (transform.rotation.y == 0)
+        {
+            newXPos = transform.position.x + deltaMove;
+        }
+        else
+        {
+            newXPos = transform.position.x - deltaMove;
+
+        }
 
         rigidBody.MovePosition(new Vector3(newXPos,
-                                            transform.position.y,
-                                            transform.position.z));
+                                           transform.position.y,
+                                           transform.position.z));
     }
 }
