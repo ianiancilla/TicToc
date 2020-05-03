@@ -527,8 +527,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  accelerationTime: 2.5
-  decelerationTime: 1
+  accelerationTime: 5
+  decelerationTime: 5
 --- !u!114 &900861090
 MonoBehaviour:
   m_ObjectHideFlags: 0

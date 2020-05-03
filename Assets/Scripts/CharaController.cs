@@ -40,12 +40,14 @@ public class CharaController : MonoBehaviour
     /// <param name="direction">Only sign is meaningful. Negative values move left, positive move right.</param>
     public void MoveHorizontally(float direction)
     {
-        float newZPos = CalculateTargetZ(direction);
+        var targetPos = new Vector3(transform.position.x,
+                                    transform.position.y,
+                                    CalculateTargetZ(direction));
 
-        rigidBody.MovePosition(new Vector3(transform.position.x,
-                                        transform.position.y,
-                                        newZPos));
-
+        var deltaMove = CalculateDeltaMove(IsAccelerating(direction));
+        transform.position = Vector3.MoveTowards(transform.position,
+                                                 targetPos,
+                                                 deltaMove);
     }
 
     /// <summary>
@@ -56,11 +58,14 @@ public class CharaController : MonoBehaviour
     /// <param name="direction">Only sign is meaningful. Negative values move dowm, positive move up.</param>
     public void MoveVertically(float direction)
     {
-        float newYPos = CalculateTargetY(direction);
+        var targetPos = new Vector3(transform.position.x,
+                                    CalculateTargetY(direction),
+                                    transform.position.z);
 
-        rigidBody.MovePosition(new Vector3(transform.position.x,
-                                           newYPos,
-                                           transform.position.z));
+        var deltaMove = CalculateDeltaMove(IsAccelerating(direction));
+        transform.position = Vector3.MoveTowards(transform.position,
+                                                 targetPos,
+                                                 deltaMove);
     }
 
 
@@ -72,12 +77,17 @@ public class CharaController : MonoBehaviour
     /// <param name="verDirection">Only sign is meaningful.</param>
     public void MoveZY(float horDirection, float verDirection)
     {
-        
-        var targetPos = new Vector3(transform.position.x,
-                                    CalculateTargetY(verDirection),
-                                    CalculateTargetZ(horDirection));
+        float targetY = transform.position.y;
+        float targetZ = transform.position.z;
 
-        var deltaMove = CalculateDeltaMove(IsAccelerating(horDirection + verDirection));
+        if (verDirection != 0) { targetY = CalculateTargetY(verDirection); }
+        if (horDirection != 0) { targetZ = CalculateTargetZ(horDirection); }
+
+        var targetPos = new Vector3(transform.position.x,
+                                    targetY,
+                                    targetZ);
+
+        var deltaMove = CalculateDeltaMove(IsAccelerating(horDirection) | IsAccelerating(verDirection));
 
         transform.position = Vector3.MoveTowards(transform.position,
                                                  targetPos,
@@ -87,7 +97,7 @@ public class CharaController : MonoBehaviour
     private float CalculateDeltaMove(bool accelerating)
     {
         // define speed based on acceleration/deceleration
-        if (! accelerating)
+        if (accelerating)
         {
             currentSpeed = Mathf.Clamp(currentSpeed + (accelerationPerSec * Time.deltaTime),
                                        0,
@@ -107,8 +117,8 @@ public class CharaController : MonoBehaviour
     
     private bool IsAccelerating(float direction)
     {
-        if (direction == 0) { return true; }
-        else { return false; }
+        if (direction == 0) { return false; }
+        else { return true; }
     }
     
     private void FaceHorDirection(float horDirection)
@@ -142,21 +152,15 @@ public class CharaController : MonoBehaviour
     private float CalculateTargetZ(float direction)
     {
         FaceHorDirection(direction);
-
-        float deltaMove = CalculateDeltaMove(IsAccelerating(direction));
-
-        float newZPos = transform.position.z + (deltaMove * currentHorDir);
+        float newZPos = transform.position.z + (moveSpeed * currentHorDir);
         return newZPos;
     }
 
     private float CalculateTargetY(float direction)
     {
         FaceVerDirection(direction);
-
-        float deltaMove = CalculateDeltaMove(IsAccelerating(direction));
-
-        float newYPos = transform.position.y + (deltaMove * currentVerDir);
-        return newYPos;
+        float newYPos = transform.position.y + (moveSpeed * currentVerDir);
+        return newYPos;        
     }
 
 }
