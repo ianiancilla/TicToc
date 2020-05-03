@@ -24,8 +24,7 @@ public class InputHandler : MonoBehaviour
 
     private void FixedUpdate()
     {
+        charaController.FaceHorDirection(horizontalInput);
         charaController.MoveHorizontally(horizontalInput);
-        //charaController.MoveVertically(verticalInput);
-        //charaController.MoveZY(horizontalInput, verticalInput);
     }
 }
