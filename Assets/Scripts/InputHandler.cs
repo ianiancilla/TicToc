@@ -5,6 +5,7 @@ using UnityEngine;
 public class InputHandler : MonoBehaviour
 {
     float horizontalInput;
+    float verticalInput;
 
     // cache
     CharaController charaController;
@@ -18,10 +19,13 @@ public class InputHandler : MonoBehaviour
     void Update()
     {
         horizontalInput = Input.GetAxis("Horizontal");
+        verticalInput = Input.GetAxis("Vertical");
     }
 
     private void FixedUpdate()
     {
-        charaController.MoveHorizontally(horizontalInput);
+        //charaController.MoveHorizontally(horizontalInput);
+        //charaController.MoveVertically(verticalInput);
+        charaController.MoveZY(horizontalInput, verticalInput);
     }
 }
