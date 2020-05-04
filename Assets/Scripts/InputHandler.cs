@@ -20,11 +20,12 @@ public class InputHandler : MonoBehaviour
     {
         horizontalInput = Input.GetAxis("Horizontal");
         verticalInput = Input.GetAxis("Vertical");
+
     }
 
     private void FixedUpdate()
     {
         charaController.FaceHorDirection(horizontalInput);
-        charaController.MoveHorizontally(horizontalInput);
+        charaController.Move(horizontalInput, 0);
     }
 }

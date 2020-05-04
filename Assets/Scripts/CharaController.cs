@@ -20,16 +20,19 @@ public class CharaController : MonoBehaviour
     }
 
     /// <summary>
-    /// Moves character horizontally along Z-axis, with max move speed dictated by moveSpeed.
+    ///  Moves character along Z-axis and Y-axis, with max move speed dictated by moveSpeed.
     /// </summary>
-    /// <param name="direction"></param>
-    public void MoveHorizontally(float direction)
+    /// <param name="directionZ">-1 to 1, 0 means no movement</param>
+    /// <param name="directionY">-1 to 1, 0 means no movement</param>
+    public void Move(float directionZ, float directionY)
     {
-        float deltaMove = moveSpeed * direction * Time.deltaTime;
+        float deltaZ = moveSpeed * directionZ * Time.deltaTime;
+        float deltaY = moveSpeed * directionY * Time.deltaTime;
+
 
         transform.position = new Vector3(transform.position.x,
-                                         transform.position.y,
-                                         transform.position.z + deltaMove);
+                                         transform.position.y + deltaY,
+                                         transform.position.z + deltaZ);
     }
 
     /// <summary>
@@ -41,12 +44,35 @@ public class CharaController : MonoBehaviour
         // face correct direction
         if (horDirection > 0)
         {
-            transform.rotation = Quaternion.Euler(0, 0, 0);
+            transform.rotation = Quaternion.Euler(0, 90, 0);
         }
         else if (horDirection < 0)
         {
-            transform.rotation = Quaternion.Euler(0, 180, 0);
+            transform.rotation = Quaternion.Euler(0, 270, 0);
         }
+    }
+
+    /// <summary>
+    /// Moves character to given position.
+    /// </summary>
+    /// <param name="targetPosition"></param>
+    public void Teleport(Vector3 targetPos)
+    {
+        transform.position = targetPos;
+    }
+
+    public void MoveToPosCoroutine(Vector3 targetPos)
+    {
+        StartCoroutine(MoveToPos(targetPos));
+    }
+
+    IEnumerator MoveToPos(Vector3 targetPos)
+    {
+        float deltaMove = moveSpeed * Time.deltaTime;
+
+        yield return transform.position = Vector3.MoveTowards(transform.position,
+                                                              targetPos,
+                                                              deltaMove);
     }
 
 }
